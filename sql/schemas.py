@@ -14,6 +14,13 @@ class BookInstanceBase(BaseModel):
 class BookInstanceCreate(BookInstanceBase):
     pass
 
+class BookInstanceUpdate(BaseModel):
+    imprint: str | None = None
+    due_back: datetime.date | None = None
+    status: BookInstanceStatus | None = None
+    borrower_id: int | None = None
+    book_id: int | None = None
+
 class BookInstance(BookInstanceBase):
     id: str
 
@@ -30,6 +37,13 @@ class BookBase(BaseModel):
 
 class BookCreate(BookBase):
     pass
+
+class BookUpdate(BaseModel):
+    title: str | None = None
+    description: str | None = None
+    author_id: int | None = None
+    genre_id: int | None = None
+    language_id: int | None = None
 
 class Book(BookBase):
     instances: list[BookInstance] = []
@@ -75,6 +89,12 @@ class AuthorBase(BaseModel):
 class AuthorCreate(AuthorBase):
     pass
 
+class AuthorUpdate(BaseModel):
+    first_name: str | None = None
+    last_name: str | None = None
+    date_of_birth: datetime.date | None = None
+    date_of_death: datetime.date | None = None
+
 class Author(AuthorBase):
     id: int
     books: list[Book] = []
@@ -89,6 +109,10 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str
+
+class UserUpdate(BaseModel):
+    username: str | None = None
+    email: str | None = None
 
 class User(UserBase):
     id: int
