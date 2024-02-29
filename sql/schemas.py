@@ -45,6 +45,7 @@ class GenreCreate(GenreBase):
     pass 
 
 class Genre(GenreBase):
+    id: int
     books: list[Book] = []
 
     class Config:
@@ -58,6 +59,7 @@ class LanguageCreate(GenreBase):
     pass 
 
 class Language(GenreBase):
+    id: int
     books: list[Book] = []
 
     class Config:
