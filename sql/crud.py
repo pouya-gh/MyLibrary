@@ -22,6 +22,14 @@ def create_user(db: Session, user: schemas.UserCreate):
     db.refresh(db_user)
     return db_user
 
+def update_user(db: Session, user_id: int, data: schemas.UserUpdate):
+    db_user = db.query(models.User).filter(models.User.id == user_id)
+    json_data = data.model_dump(exclude_none=True)
+    if len(json_data) > 0:
+        db_user.update(json_data)
+        db.commit()
+    return db_user.first()
+
 # authors
 def get_author(db: Session, author_id: int):
     return db.query(models.Author).filter(models.Author.id == author_id).first()
@@ -35,6 +43,14 @@ def create_author(db: Session, author: schemas.AuthorCreate):
     db.commit()
     db.refresh(db_author)
     return db_author
+
+def update_author(db: Session, author_id: int, data: schemas.AuthorUpdate):
+    db_author = db.query(models.Author).filter(models.Author.id == author_id)
+    json_data = data.model_dump(exclude_none=True)
+    if len(json_data) > 0:
+        db_author.update(json_data)
+        db.commit()
+    return db_author.first()
 
 # genre
 def get_genre_by_name(db: Session, genre_name: str):
@@ -50,6 +66,14 @@ def create_genre(db: Session, genre: schemas.GenreCreate):
     db.refresh(db_genre)
     return db_genre
 
+def update_genre(db: Session, genre_id: int, data: schemas.GenreUpdate):
+    db_genre = db.query(models.Genre).filter(models.Genre.id == genre_id)
+    json_data = data.model_dump(exclude_none=True)
+    if len(json_data) > 0:
+        db_genre.update(json_data)
+        db.commit()
+    return db_genre.first()
+
 # language
 def get_language_by_name(db: Session, language_name: str):
     return db.query(models.Language).filter(models.Language.name == language_name).first()
@@ -57,12 +81,20 @@ def get_language_by_name(db: Session, language_name: str):
 def get_languages(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Language).offset(skip).limit(limit).all()
 
-def create_genre(db: Session, language: schemas.LanguageCreate):
+def create_language(db: Session, language: schemas.LanguageCreate):
     db_language = models.Language(**language.model_dump())
     db.add(db_language)
     db.commit()
     db.refresh(db_language)
     return db_language
+
+def update_language(db: Session, language_id: int, data: schemas.LanguageUpdate):
+    db_language = db.query(models.Language).filter(models.Language.id == language_id)
+    json_data = data.model_dump(exclude_none=True)
+    if len(json_data) > 0:
+        db_language.update(json_data)
+        db.commit()
+    return db_language.first()
 
 # books
 def get_book(db: Session, book_id: int):
@@ -119,6 +151,14 @@ def create_book(db: Session, book: schemas.BookCreate):
     db.commit()
     db.refresh(db_book)
     return db_book
+
+def update_book(db: Session, book_id: int, data: schemas.BookUpdate):
+    db_book = db.query(models.Book).filter(models.Book.id == book_id)
+    json_data = data.model_dump(exclude_none=True)
+    if len(json_data) > 0:
+        db_book.update(json_data)
+        db.commit()
+    return db_book.first()
     
 # book instances
 def get_book_instance(db: Session, instance_id: str): # str id because this one is uuid
@@ -141,3 +181,11 @@ def create_book_instance(db: Session, book_instance: schemas.BookInstanceCreate)
     db.commit()
     db.refresh(db_book_instance)
     return db_book_instance
+
+def update_book_instance(db: Session, instance_id: str, data: schemas.BookInstanceUpdate):
+    db_instance = db.query(models.BookInstance).filter(models.BookInstance.id == instance_id)
+    json_data = data.model_dump(exclude_none=True)
+    if len(json_data) > 0:
+        db_instance.update(json_data)
+        db.commit()
+    return db_instance.first()
