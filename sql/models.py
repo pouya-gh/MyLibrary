@@ -26,7 +26,7 @@ class Author(Base):
     date_of_birth = Column(Date, nullable=False)
     date_of_death = Column(Date, nullable=True)
 
-    books = relationship("Book", back_populates='author')
+    books = relationship("Book", back_populates='author', cascade='all, delete, save-update')
 
 class Genre(Base):
     __tablename__ = 'genres'
@@ -56,7 +56,7 @@ class Book(Base):
     genre = relationship('Genre', back_populates='books')
     language = relationship('Language', back_populates='books')
 
-    instances = relationship('BookInstance', back_populates='book')
+    instances = relationship('BookInstance', back_populates='book', cascade='all, delete, save-update')
 
 class BookInstanceStatus(enum.Enum):
     m = 'Maintenance'
