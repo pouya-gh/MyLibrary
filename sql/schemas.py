@@ -58,6 +58,9 @@ class GenreBase(BaseModel):
 class GenreCreate(GenreBase):
     pass 
 
+class GenreUpdate(BaseModel):
+    name: str | None = None
+
 class Genre(GenreBase):
     id: int
     books: list[Book] = []
@@ -71,6 +74,9 @@ class LanguageBase(BaseModel):
 
 class LanguageCreate(GenreBase):
     pass 
+
+class LanguageUpdate(BaseModel):
+    name: str | None = None
 
 class Language(GenreBase):
     id: int
