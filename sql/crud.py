@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import delete, update
 
 from . import models, schemas
 
@@ -30,6 +31,20 @@ def update_user(db: Session, user_id: int, data: schemas.UserUpdate):
         db.commit()
     return db_user.first()
 
+def delete_user(db: Session, user_id: int):
+    db_user = get_user(db, user_id)
+    if db_user:
+        statement = update(models.BookInstance).\
+            where(models.BookInstance.borrower_id == user_id).\
+            values({'status': models.BookInstanceStatus.a})
+        # for bi in db_user.borrowed_book_instances:
+        #     bi.status = models.BookInstanceStatus.a
+        #     bi.borrower_id = 0
+        db.execute(statement)
+        db.delete(db_user) # borrower_id of 'BookInstace's get set to None automatically
+        db.commit()
+    return db_user
+
 # authors
 def get_author(db: Session, author_id: int):
     return db.query(models.Author).filter(models.Author.id == author_id).first()
@@ -51,6 +66,15 @@ def update_author(db: Session, author_id: int, data: schemas.AuthorUpdate):
         db_author.update(json_data)
         db.commit()
     return db_author.first()
+
+def delete_author(db: Session, author_id: int):
+    db_author = get_author(db, author_id)
+    if db_author:
+        # del_statement = delete(models.Book).where(models.Book.author_id)
+        # db.execute(del_statement)
+        db.delete(db_author)
+        db.commit()
+    return db_author
 
 # genre
 def get_genre_by_name(db: Session, genre_name: str):
@@ -74,6 +98,13 @@ def update_genre(db: Session, genre_id: int, data: schemas.GenreUpdate):
         db.commit()
     return db_genre.first()
 
+def delete_genre(db: Session, genre_id: int)
+    db_genre = db.query(models.Genre).filter(models.Genre.id == genre_id).first()
+    if db_genre:
+        db.delete(db_genre)
+        db.commit()
+    return db_genre
+
 # language
 def get_language_by_name(db: Session, language_name: str):
     return db.query(models.Language).filter(models.Language.name == language_name).first()
@@ -95,6 +126,13 @@ def update_language(db: Session, language_id: int, data: schemas.LanguageUpdate)
         db_language.update(json_data)
         db.commit()
     return db_language.first()
+
+def delete_language(db: Session, langauge_id: int)
+    db_lanuage = db.query(models.Language).filter(models.Language.id == langauge_id).first()
+    if db_lanuage:
+        db.delete(db_lanuage)
+        db.commit()
+    return db_lanuage
 
 # books
 def get_book(db: Session, book_id: int):
@@ -159,6 +197,13 @@ def update_book(db: Session, book_id: int, data: schemas.BookUpdate):
         db_book.update(json_data)
         db.commit()
     return db_book.first()
+
+def delete_book(db: Session, book_id: int):
+    db_book = get_book(db, book_id)
+    if db_book:
+        db.delete(db_book)
+        db.commit()
+    return db_book
     
 # book instances
 def get_book_instance(db: Session, instance_id: str): # str id because this one is uuid
@@ -189,3 +234,10 @@ def update_book_instance(db: Session, instance_id: str, data: schemas.BookInstan
         db_instance.update(json_data)
         db.commit()
     return db_instance.first()
+
+def delete_book_instance(db: Session, instance_id: str):
+    db_instance = get_book_instance(db, instance_id)
+    if db_instance:
+        db.delete(db_instance)
+        db.commit()
+    return db_instance
