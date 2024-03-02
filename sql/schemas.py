@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from models import BookInstanceStatus
+from sql.models import BookInstanceStatus
 
 import datetime
 
