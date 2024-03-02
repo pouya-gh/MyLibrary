@@ -26,7 +26,7 @@ def create_user(db: Session, user: schemas.UserCreate):
 def update_user(db: Session, user_id: int, data: schemas.UserUpdate):
     db_user = db.query(models.User).filter(models.User.id == user_id)
     json_data = data.model_dump(exclude_none=True)
-    if len(json_data) > 0:
+    if json_data:
         db_user.update(json_data)
         db.commit()
     return db_user.first()
@@ -62,7 +62,7 @@ def create_author(db: Session, author: schemas.AuthorCreate):
 def update_author(db: Session, author_id: int, data: schemas.AuthorUpdate):
     db_author = db.query(models.Author).filter(models.Author.id == author_id)
     json_data = data.model_dump(exclude_none=True)
-    if len(json_data) > 0:
+    if json_data:
         db_author.update(json_data)
         db.commit()
     return db_author.first()
@@ -93,12 +93,12 @@ def create_genre(db: Session, genre: schemas.GenreCreate):
 def update_genre(db: Session, genre_id: int, data: schemas.GenreUpdate):
     db_genre = db.query(models.Genre).filter(models.Genre.id == genre_id)
     json_data = data.model_dump(exclude_none=True)
-    if len(json_data) > 0:
+    if json_data:
         db_genre.update(json_data)
         db.commit()
     return db_genre.first()
 
-def delete_genre(db: Session, genre_id: int)
+def delete_genre(db: Session, genre_id: int):
     db_genre = db.query(models.Genre).filter(models.Genre.id == genre_id).first()
     if db_genre:
         db.delete(db_genre)
@@ -122,12 +122,12 @@ def create_language(db: Session, language: schemas.LanguageCreate):
 def update_language(db: Session, language_id: int, data: schemas.LanguageUpdate):
     db_language = db.query(models.Language).filter(models.Language.id == language_id)
     json_data = data.model_dump(exclude_none=True)
-    if len(json_data) > 0:
+    if json_data:
         db_language.update(json_data)
         db.commit()
     return db_language.first()
 
-def delete_language(db: Session, langauge_id: int)
+def delete_language(db: Session, langauge_id: int):
     db_lanuage = db.query(models.Language).filter(models.Language.id == langauge_id).first()
     if db_lanuage:
         db.delete(db_lanuage)
@@ -193,7 +193,7 @@ def create_book(db: Session, book: schemas.BookCreate):
 def update_book(db: Session, book_id: int, data: schemas.BookUpdate):
     db_book = db.query(models.Book).filter(models.Book.id == book_id)
     json_data = data.model_dump(exclude_none=True)
-    if len(json_data) > 0:
+    if json_data:
         db_book.update(json_data)
         db.commit()
     return db_book.first()
@@ -230,7 +230,7 @@ def create_book_instance(db: Session, book_instance: schemas.BookInstanceCreate)
 def update_book_instance(db: Session, instance_id: str, data: schemas.BookInstanceUpdate):
     db_instance = db.query(models.BookInstance).filter(models.BookInstance.id == instance_id)
     json_data = data.model_dump(exclude_none=True)
-    if len(json_data) > 0:
+    if json_data:
         db_instance.update(json_data)
         db.commit()
     return db_instance.first()
