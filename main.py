@@ -142,7 +142,7 @@ def create_book(book: schemas.BookCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Failed to create book")
     
 @app.get("/books/", response_model=list[schemas.Book])
-def get_bookbooks(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+def get_books(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return crud.get_books(db, skip, limit)
 
 @app.get("/books/{book_id}", response_model=schemas.Book)
@@ -165,3 +165,36 @@ def delete_book(book_id: int, db: Session = Depends(get_db)):
     if db_book is None:
         raise HTTPException(status_code=404, detail="Book does not exist")
     return db_book
+
+# book instance
+@app.post("/bookinstances/", response_model=schemas.BookInstance)
+def create_bookinstance(instance: schemas.BookInstanceCreate, db: Session = Depends(get_db)):
+    try:
+        return crud.create_book_instance(db, instance)
+    except IntegrityError:
+        raise HTTPException(status_code=400, detail="Failed to create book instance")
+    
+@app.get("/bookinstances/", response_model=list[schemas.BookInstance])
+def get_bookinstances(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    return crud.get_book_instances(db, skip, limit)
+
+@app.get("/bookinstances/{instance_id}", response_model=schemas.BookInstance)
+def get_bookinstance(instance_id: str, db: Session = Depends(get_db)):
+    db_bookinstance = crud.get_book_instance(db, instance_id)
+    if db_bookinstance is None:
+        raise HTTPException(status_code=404, detail="Book instance deos not exist")
+    return db_bookinstance
+
+@app.post("/bookinstances/{instance_id}", response_model=schemas.BookInstance)
+def update_bookinstance(instance: schemas.BookInstanceUpdate, instance_id: str, db: Session = Depends(get_db)):
+    db_bookinstance = crud.update_book_instance(db, instance_id, crud)
+    if db_bookinstance is None:
+        raise HTTPException(status_code=404, detail="Book instance does not exist")
+    return db_bookinstance
+
+@app.post("/bookinstances/{instance_id}/delete", response_model=schemas.BookInstance)
+def delete_bookinstance(instance_id: str, db: Session = Depends(get_db)):
+    db_bookinstance = crud.delete_book_instance(db, instance_id)
+    if db_bookinstance is None:
+        raise HTTPException(status_code=404, detail="Book does not exist")
+    return db_bookinstance
