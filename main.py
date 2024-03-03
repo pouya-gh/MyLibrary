@@ -14,6 +14,7 @@ app = FastAPI()
 async def index():
     return {"msg": "Welcome!"}
 
+# users
 @app.post('/users/', response_model=schemas.User)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     try:
@@ -46,3 +47,36 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
     if db_user is None:
         raise HTTPException(status_code=404, detail="User does not exist")
     return db_user
+
+# authors
+@app.post("/authors/", response_model=schemas.Author)
+def create_author(author: schemas.AuthorCreate, db: Session = Depends(get_db)):
+    try:
+        return crud.create_author(db, author)
+    except IntegrityError:
+        raise HTTPException(status_code=400, detail="Failed to create author")
+    
+@app.get("/authors/", response_model=list[schemas.Author])
+def get_authors(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    return crud.get_authors(db, skip, limit)
+
+@app.get("/authors/{author_id}", response_model=schemas.Author)
+def get_author(author_id: int, db: Session = Depends(get_db)):
+    db_author = crud.get_author(db, author_id)
+    if db_author is None:
+        raise HTTPException(status_code=404, detail="Author deos not exist")
+    return db_author
+
+@app.post("/authors/{author_id}", response_model=schemas.Author)
+def update_author(author: schemas.AuthorUpdate, author_id: int, db: Session = Depends(get_db)):
+    db_author = crud.update_author(db, author_id, author)
+    if db_author is None:
+        raise HTTPException(status_code=404, detail="Author does not exist")
+    return db_author
+
+@app.post("/authors/{author_id}/delete", response_model=schemas.Author)
+def delete_author(author_id: int, db: Session = Depends(get_db)):
+    db_author = crud.delete_author(db, author_id)
+    if db_author is None:
+        raise HTTPException(status_code=404, detail="Author does not exist")
+    return db_author
