@@ -46,6 +46,7 @@ class BookUpdate(BaseModel):
     language_id: int | None = None
 
 class Book(BookBase):
+    id: int
     instances: list[BookInstance] = []
 
     class Config:
