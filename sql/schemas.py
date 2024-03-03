@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from sql.models import BookInstanceStatus
 
 import datetime
+import uuid
 
 # book instance
 class BookInstanceBase(BaseModel):
@@ -22,7 +23,7 @@ class BookInstanceUpdate(BaseModel):
     book_id: int | None = None
 
 class BookInstance(BookInstanceBase):
-    id: str
+    id: uuid.UUID
 
     class Config:
         orm_mode = True

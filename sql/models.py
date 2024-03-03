@@ -67,7 +67,7 @@ class BookInstanceStatus(enum.Enum):
 class BookInstance(Base):
     __tablename__ = 'bookinstances'
 
-    id = Column(Uuid, primary_key=True, default=uuid.uuid4)
+    id = Column(Uuid(as_uuid=False), primary_key=True, default=uuid.uuid4)
     book_id = Column(Integer, ForeignKey('books.id'))
     imprint = Column(String)
     due_back = Column(Date, nullable=True, index=True)
