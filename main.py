@@ -106,3 +106,29 @@ def delete_genre(genre_id: int, db: Session = Depends(get_db)):
     if db_genre is None:
         raise HTTPException(status_code=404, detail="Genre does not exist")
     return db_genre
+
+# language
+@app.post("/languages/", response_model=schemas.Language)
+def create_language(language: schemas.LanguageCreate, db: Session = Depends(get_db)):
+    try:
+        return crud.create_language(db, language)
+    except IntegrityError:
+        raise HTTPException(status_code=400, detail="Failed to create language")
+    
+@app.get("/languages/", response_model=list[schemas.Language])
+def get_languages(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    return crud.get_languages(db, skip, limit)
+
+@app.post("/languages/{language_id}", response_model=schemas.Language)
+def update_language(language: schemas.LanguageUpdate, language_id: int, db: Session = Depends(get_db)):
+    db_language = crud.update_language(db, language_id, language)
+    if db_language is None:
+        raise HTTPException(status_code=404, detail="Language does not exist")
+    return db_language
+
+@app.post("/languages/{language_id}/delete", response_model=schemas.Language)
+def delete_language(language_id: int, db: Session = Depends(get_db)):
+    db_language = crud.delete_language(db, language_id)
+    if db_language is None:
+        raise HTTPException(status_code=404, detail="Language does not exist")
+    return db_language
