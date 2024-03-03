@@ -132,3 +132,36 @@ def delete_language(language_id: int, db: Session = Depends(get_db)):
     if db_language is None:
         raise HTTPException(status_code=404, detail="Language does not exist")
     return db_language
+
+# book
+@app.post("/books/", response_model=schemas.Book)
+def create_book(book: schemas.BookCreate, db: Session = Depends(get_db)):
+    try:
+        return crud.create_book(db, book)
+    except IntegrityError:
+        raise HTTPException(status_code=400, detail="Failed to create book")
+    
+@app.get("/books/", response_model=list[schemas.Book])
+def get_bookbooks(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    return crud.get_books(db, skip, limit)
+
+@app.get("/books/{book_id}", response_model=schemas.Book)
+def get_book(book_id: int, db: Session = Depends(get_db)):
+    db_book = crud.get_book(db, book_id)
+    if db_book is None:
+        raise HTTPException(status_code=404, detail="Book deos not exist")
+    return db_book
+
+@app.post("/books/{book_id}", response_model=schemas.Book)
+def update_book(book: schemas.BookUpdate, book_id: int, db: Session = Depends(get_db)):
+    db_book = crud.update_book(db, book_id, book)
+    if db_book is None:
+        raise HTTPException(status_code=404, detail="Book does not exist")
+    return db_book
+
+@app.post("/books/{book_id}/delete", response_model=schemas.Book)
+def delete_book(book_id: int, db: Session = Depends(get_db)):
+    db_book = crud.delete_book(db, book_id)
+    if db_book is None:
+        raise HTTPException(status_code=404, detail="Book does not exist")
+    return db_book
