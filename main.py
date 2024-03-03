@@ -80,3 +80,29 @@ def delete_author(author_id: int, db: Session = Depends(get_db)):
     if db_author is None:
         raise HTTPException(status_code=404, detail="Author does not exist")
     return db_author
+
+# genre
+@app.post("/genres/", response_model=schemas.Genre)
+def create_genre(genre: schemas.GenreCreate, db: Session = Depends(get_db)):
+    try:
+        return crud.create_genre(db, genre)
+    except IntegrityError:
+        raise HTTPException(status_code=400, detail="Failed to create genre")
+    
+@app.get("/genres/", response_model=list[schemas.Genre])
+def get_genres(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    return crud.get_genres(db, skip, limit)
+
+@app.post("/genres/{genre_id}", response_model=schemas.Genre)
+def update_genre(genre: schemas.GenreUpdate, genre_id: int, db: Session = Depends(get_db)):
+    db_genre = crud.update_genre(db, genre_id, genre)
+    if db_genre is None:
+        raise HTTPException(status_code=404, detail="Genre does not exist")
+    return db_genre
+
+@app.post("/genres/{genre_id}/delete", response_model=schemas.Genre)
+def delete_genre(genre_id: int, db: Session = Depends(get_db)):
+    db_genre = crud.delete_genre(db, genre_id)
+    if db_genre is None:
+        raise HTTPException(status_code=404, detail="Genre does not exist")
+    return db_genre
