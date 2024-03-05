@@ -1,0 +1,66 @@
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
+
+from sql import schemas, crud
+
+from dependencies import get_db, get_current_active_user
+
+router = APIRouter(prefix="/books")
+
+@router.post("/", response_model=schemas.Book)
+def create_book(
+        db: Annotated[Session, Depends(get_db)], 
+        current_user: Annotated[schemas.User, Depends(get_current_active_user)],
+        book: schemas.BookCreate
+    ):
+
+    try:
+        return crud.create_book(db, book)
+    except IntegrityError:
+        raise HTTPException(status_code=400, detail="Failed to create book")
+    
+@router.get("/", response_model=list[schemas.Book])
+def get_books(
+        db: Annotated[Session, Depends(get_db)],
+        skip: int = 0, limit: int = 100
+    ):
+
+    return crud.get_books(db, skip, limit)
+
+@router.get("/{book_id}", response_model=schemas.Book)
+def get_book(
+        db: Annotated[Session, Depends(get_db)], 
+        book_id: int
+    ):
+
+    db_book = crud.get_book(db, book_id)
+    if db_book is None:
+        raise HTTPException(status_code=404, detail="Book deos not exist")
+    return db_book
+
+@router.post("/{book_id}", response_model=schemas.Book)
+def update_book(
+        db: Annotated[Session, Depends(get_db)], 
+        current_user: Annotated[schemas.User, Depends(get_current_active_user)],
+        book: schemas.BookUpdate, book_id: int
+    ):
+
+    db_book = crud.update_book(db, book_id, book)
+    if db_book is None:
+        raise HTTPException(status_code=404, detail="Book does not exist")
+    return db_book
+
+@router.post("/{book_id}/delete", response_model=schemas.Book)
+def delete_book(
+        db: Annotated[Session, Depends(get_db)], 
+        current_user: Annotated[schemas.User, Depends(get_current_active_user)],
+        book_id: int
+    ):
+
+    db_book = crud.delete_book(db, book_id)
+    if db_book is None:
+        raise HTTPException(status_code=404, detail="Book does not exist")
+    return db_book
