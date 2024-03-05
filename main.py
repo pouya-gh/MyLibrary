@@ -14,6 +14,7 @@ from routers.users import router as users_router
 from routers.books import router as books_router
 from routers.authors import router as authors_router
 from routers.genres import router as genres_router
+from routers.languages import router as langauges_router
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -61,52 +62,7 @@ def get_current_logged_in_user(
 app.include_router(users_router)
 app.include_router(authors_router)
 app.include_router(genres_router)
-
-# language
-@app.post("/languages/", response_model=schemas.Language)
-def create_language(
-        db: Annotated[Session, Depends(get_db)], 
-        current_user: Annotated[schemas.User, Depends(get_current_active_user)],
-        language: schemas.LanguageCreate
-    ):
-
-    try:
-        return crud.create_language(db, language)
-    except IntegrityError:
-        raise HTTPException(status_code=400, detail="Failed to create language")
-    
-@app.get("/languages/", response_model=list[schemas.Language])
-def get_languages(
-        db: Annotated[Session, Depends(get_db)], 
-        skip: int = 0, limit: int = 100
-    ):
-
-    return crud.get_languages(db, skip, limit)
-
-@app.post("/languages/{language_id}", response_model=schemas.Language)
-def update_language(
-        db: Annotated[Session, Depends(get_db)], 
-        current_user: Annotated[schemas.User, Depends(get_current_active_user)],
-        language: schemas.LanguageUpdate, language_id: int
-    ):
-
-    db_language = crud.update_language(db, language_id, language)
-    if db_language is None:
-        raise HTTPException(status_code=404, detail="Language does not exist")
-    return db_language
-
-@app.post("/languages/{language_id}/delete", response_model=schemas.Language)
-def delete_language(
-        db: Annotated[Session, Depends(get_db)], 
-        current_user: Annotated[schemas.User, Depends(get_current_active_user)],
-        language_id: int
-    ):
-
-    db_language = crud.delete_language(db, language_id)
-    if db_language is None:
-        raise HTTPException(status_code=404, detail="Language does not exist")
-    return db_language
-
+app.include_router(langauges_router)
 app.include_router(books_router)
 
 # book instance
