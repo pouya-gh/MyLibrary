@@ -12,6 +12,7 @@ import dependencies
 from dependencies import get_db, get_current_active_user
 from routers.users import router as users_router
 from routers.books import router as books_router
+from routers.authors import router as authors_router
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -57,62 +58,7 @@ def get_current_logged_in_user(
     return current_user
 
 app.include_router(users_router)
-
-# authors
-@app.post("/authors/", response_model=schemas.Author)
-def create_author(
-        db: Annotated[Session, Depends(get_db)], 
-        current_user: Annotated[schemas.User, Depends(get_current_active_user)],
-        author: schemas.AuthorCreate
-    ):
-
-    try:
-        return crud.create_author(db, author)
-    except IntegrityError:
-        raise HTTPException(status_code=400, detail="Failed to create author")
-    
-@app.get("/authors/", response_model=list[schemas.Author])
-def get_authors(
-        db: Annotated[Session, Depends(get_db)], 
-        skip: int = 0, limit: int = 100
-    ):
-
-    return crud.get_authors(db, skip, limit)
-
-@app.get("/authors/{author_id}", response_model=schemas.Author)
-def get_author(
-        db: Annotated[Session, Depends(get_db)], 
-        author_id: int
-    ):
-
-    db_author = crud.get_author(db, author_id)
-    if db_author is None:
-        raise HTTPException(status_code=404, detail="Author deos not exist")
-    return db_author
-
-@app.post("/authors/{author_id}", response_model=schemas.Author)
-def update_author(
-        db: Annotated[Session, Depends(get_db)], 
-        current_user: Annotated[schemas.User, Depends(get_current_active_user)],
-        author: schemas.AuthorUpdate, author_id: int
-    ):
-    
-    db_author = crud.update_author(db, author_id, author)
-    if db_author is None:
-        raise HTTPException(status_code=404, detail="Author does not exist")
-    return db_author
-
-@app.post("/authors/{author_id}/delete", response_model=schemas.Author)
-def delete_author(
-        db: Annotated[Session, Depends(get_db)], 
-        current_user: Annotated[schemas.User, Depends(get_current_active_user)],
-        author_id: int
-    ):
-
-    db_author = crud.delete_author(db, author_id)
-    if db_author is None:
-        raise HTTPException(status_code=404, detail="Author does not exist")
-    return db_author
+app.include_router(authors_router)
 
 # genre
 @app.post("/genres/", response_model=schemas.Genre)
