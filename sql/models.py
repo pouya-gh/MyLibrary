@@ -62,7 +62,7 @@ class BookInstanceStatus(enum.Enum):
     m = 'Maintenance'
     o = 'On loan'
     a = 'Available'
-    r = 'Reversed'
+    r = 'Reserved'
 
 class BookInstance(Base):
     __tablename__ = 'bookinstances'
