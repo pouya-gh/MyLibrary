@@ -1,8 +1,9 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Uuid, Date, Text, Enum
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, validates
 
 import uuid
 import enum
+import re
 
 from .database import Base
 
@@ -16,6 +17,13 @@ class User(Base):
     is_active = Column(Boolean, default=True)
 
     borrowed_book_instances = relationship("BookInstance", back_populates='borrower')
+
+    @validates("email")
+    def validate_email(self, key, value):
+        pattern = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+        if re.match(pattern, value):
+            return value
+        raise ValueError("Invalid email")
 
 class Author(Base):
     __tablename__ = 'authors'

@@ -21,6 +21,8 @@ def create_user(
         return crud.create_user(db, user)
     except IntegrityError:
         raise HTTPException(status_code=400, detail="User email/username already exists")
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid email format")
 
 @router.get("/", response_model=list[schemas.User])
 def get_users(
