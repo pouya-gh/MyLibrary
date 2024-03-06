@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import delete, update
 
 from sql import models, schemas
+from sql.models import BookInstanceStatus
 import dependencies
 
 
@@ -214,8 +215,16 @@ def delete_book(db: Session, book_id: int):
 def get_book_instance(db: Session, instance_id: str): # str id because this one is uuid
     return db.query(models.BookInstance).filter(models.BookInstance.id == instance_id).first()
 
-def get_book_instances(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.BookInstance).offset(skip).limit(limit).all()
+def get_book_instances(
+        db: Session, 
+        skip: int = 0, 
+        limit: int = 100, 
+        status: BookInstanceStatus | None = None
+    ):
+    result = db.query(models.BookInstance)
+    if status:
+        result = result.filter(models.BookInstance.status == status)
+    return result.offset(skip).limit(limit).all()
 
 def get_book_instances_by_borrower(db: Session, 
                                    borrower_id: int, # user id

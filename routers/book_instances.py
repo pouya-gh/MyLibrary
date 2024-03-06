@@ -40,10 +40,11 @@ def create_bookinstance(
 @router.get("/", response_model=list[schemas.BookInstance])
 def get_bookinstances(
         db: Annotated[Session, Depends(get_db)], 
-        skip: int = 0, limit: int = 100
+        skip: int = 0, limit: int = 100,
+        status: BookInstanceStatus | None = None
     ):
 
-    return crud.get_book_instances(db, skip, limit)
+    return crud.get_book_instances(db, skip, limit, status)
 
 @router.get("/{instance_id}", response_model=schemas.BookInstance)
 def get_bookinstance(
