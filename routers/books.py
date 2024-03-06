@@ -25,10 +25,23 @@ def create_book(
 @router.get("/", response_model=list[schemas.Book])
 def get_books(
         db: Annotated[Session, Depends(get_db)],
-        skip: int = 0, limit: int = 100
+        skip: int = 0, limit: int = 100,
+        genre: str = '', language: str = ''
     ):
 
-    return crud.get_books(db, skip, limit)
+    if not (genre or language):
+        return crud.get_books(db, skip, limit)
+    elif genre and language:
+        return crud.filter_books_by_language_and_genre(
+            db, 
+            language, 
+            genre,
+            skip,
+            limit)
+    elif genre:
+        return crud.get_books_by_genre(db, genre, skip, limit)
+    else:
+        return crud.get_books_by_language(db, language, skip, limit)
 
 @router.get("/{book_id}", response_model=schemas.Book)
 def get_book(
