@@ -5,12 +5,24 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
 from sql import schemas, crud
+from sql.models import BookInstanceStatus
 
 from dependencies import get_db, get_current_active_user
 
 from datetime import timedelta, datetime
 
 router = APIRouter(prefix="/bookinstances")
+
+def can_borrow_book_instance(book_instance: schemas.BookInstance, user_id: int) -> bool:
+    """
+    returns true if the book is available or if the user had reserved it or
+    if the book was reserved more than 1 day ago but haven't been borrowed.
+    """
+    return book_instance.status is BookInstanceStatus.a or \
+        (book_instance.status is BookInstanceStatus.r and ( 
+            book_instance.borrower_id is user_id or \
+            datetime.today().date > book_instance.due_back + timedelta(days=1)
+        ))
 
 
 @router.post("/", response_model=schemas.BookInstance)
@@ -79,9 +91,9 @@ def borrow_book(
     if instance_db is None:
         raise HTTPException(status_code=404, detail="Book instance not found")
     
-    if instance_db.status == schemas.BookInstanceStatus.a:
+    if can_borrow_book_instance(instance_db, current_user.id):
         update_data = schemas.BookInstanceUpdate(
-            status=schemas.BookInstanceStatus.o,
+            status=BookInstanceStatus.o,
             borrower_id=current_user.id,
             due_back=datetime.today().date() + timedelta(days=14))
         return crud.update_book_instance(db, instance_id, update_data)
@@ -107,3 +119,23 @@ def return_book(
         return crud.update_book_instance(db, instance_id, update_data)
     else:
         raise HTTPException(status_code=400, detail="This book instance is not borrowed to you")
+    
+@router.post("/{instance_id}/reserve", response_model=schemas.BookInstance)
+def reserve_book(
+    db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[schemas.User, Depends(get_current_active_user)],
+    instance_id: str
+):
+    instance_db = crud.get_book_instance(db, instance_id)
+    if instance_db is None:
+        raise HTTPException(status_code=404, detail="Book instance not found")
+    
+    if can_borrow_book_instance(instance_db, current_user.id):
+        update_data = schemas.BookInstanceUpdate(
+            status=BookInstanceStatus.r,
+            borrower_id=current_user.id,
+            due_back=datetime.today().date() + timedelta(days=1)
+        )
+        return crud.update_book_instance(db, instance_id, update_data)
+    else:
+        raise HTTPException(status_code=400, detail="Book instance is not available")
