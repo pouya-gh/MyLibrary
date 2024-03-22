@@ -307,6 +307,8 @@ class UserUpdate(BaseModel):
     """
     username: str | None = None
     email: str | None = None
+    is_active: bool | None = None
+    is_superuser: bool | None = None
 
     model_config = {
         "json_schema_extra": {
@@ -321,6 +323,7 @@ class UserUpdate(BaseModel):
 class User(UserBase):
     id: int
     is_active: bool
+    is_superuser: bool
     borrowed_book_instances: list[BookInstance] = []
 
     class Config:

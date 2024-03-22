@@ -15,6 +15,7 @@ class User(Base):
     email = Column(String(length=150), unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
+    is_superuser = Column(Boolean, default=False)
 
     borrowed_book_instances = relationship("BookInstance", back_populates='borrower')
 
