@@ -5,8 +5,9 @@ from sqlalchemy.exc import IntegrityError
 
 from typing import Annotated
 from datetime import timedelta
+import json
 
-from sql import crud, models, schemas
+from sql import crud, models, schemas, database
 from sql.database import engine
 import dependencies
 from dependencies import get_db, get_current_active_user
@@ -16,6 +17,8 @@ from routers.authors import router as authors_router
 from routers.genres import router as genres_router
 from routers.languages import router as langauges_router
 from routers.book_instances import router as book_instances_router
+
+from contextlib import asynccontextmanager
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -27,7 +30,30 @@ def authenticate_user(db: Session, username: str, password: str):
         return False
     return user
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    db = database.SessionLocal()
+    try:
+        with open(".env", "r") as env_file:
+            file_dict = json.loads(env_file.read())
+            SUPER_USER_USERNAME = file_dict['super_user_username']
+            SUPER_USER_PASSWORD = file_dict['super_user_password']
+            SUPER_USER_EMAIL = file_dict['super_user_email']
+        superuser_count = db.query(models.User).filter(models.User.is_superuser == True).count()
+        if superuser_count == 0:
+            super_user_schema = schemas.UserCreate(
+                username=SUPER_USER_USERNAME, 
+                password=SUPER_USER_PASSWORD, 
+                email=SUPER_USER_EMAIL)
+            super_user = crud.create_user(db, super_user_schema)
+            super_user.is_superuser = True
+            db.commit()
+    finally:
+        db.close()
+    yield
+    #nothing
+
+app = FastAPI(lifespan=lifespan)
 
 @app.get('/')
 async def index():
