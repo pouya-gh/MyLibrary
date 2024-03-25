@@ -272,7 +272,7 @@ class AuthorBase(BaseModel):
     first_name: str
     last_name: str
     date_of_birth: datetime.date
-    date_of_death: datetime.date | None
+    date_of_death: datetime.date | None = None
     
 class AuthorCreate(AuthorBase):
     model_config = {

@@ -33,7 +33,7 @@ class Author(Base):
     first_name = Column(String(length=100), nullable=False)
     last_name = Column(String(length=100), nullable=False)
     date_of_birth = Column(Date, nullable=False)
-    date_of_death = Column(Date, nullable=True)
+    date_of_death = Column(Date, nullable=True, default=None)
 
     books = relationship("Book", back_populates='author', cascade='all, delete, save-update')
 
