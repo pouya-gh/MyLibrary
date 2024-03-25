@@ -133,6 +133,24 @@ class Book(BookBase):
             ]
         }
 
+class BookInline(BookBase):
+    id: int
+
+    class Config:
+        from_attributes = True
+        json_schema_extra = {
+            "examples": [
+                {
+                    "imprint": "Foo",
+                    "due_back": datetime.date.today(),
+                    "status": "On loan",
+                    "borrower_id": 5,
+                    "book_id": 3,
+                    "id": 2,
+                }
+            ]
+        }
+
 # genre
 class GenreBase(BaseModel):
     name: str
@@ -177,6 +195,20 @@ class Genre(GenreBase):
             ]
         }
 
+class GenreInline(GenreBase):
+    id: int
+
+    class Config:
+        from_attributes = True
+        json_schema_extra = {
+            "examples": [
+                {
+                    "id": 1,
+                    "name": "Fantasy",
+                }
+            ]
+        }
+
 # language
 class LanguageBase(BaseModel):
     name: str
@@ -217,6 +249,20 @@ class Language(GenreBase):
                     "id": 1,
                     "name": "Farsi",
                     "books": [],
+                }
+            ]
+        }
+
+class LanguageInline(GenreBase):
+    id: int
+
+    class Config:
+        from_attributes = True
+        json_schema_extra = {
+            "examples": [
+                {
+                    "id": 1,
+                    "name": "Farsi",
                 }
             ]
         }
@@ -275,6 +321,22 @@ class Author(AuthorBase):
                     "date_of_birth": datetime.date.today() - datetime.timedelta(weeks=2650),
                     "date_of_death": datetime.date.today() - datetime.timedelta(weeks=500),
                     "books": []
+                }
+            ]
+        }
+
+class AuthorInline(AuthorBase):
+    id: int
+
+    class Config:
+        from_attributes = True
+        json_schema_extra = {
+            "examples": [
+                {
+                    "first_name": "Foo",
+                    "last_name": "Barsson",
+                    "date_of_birth": datetime.date.today() - datetime.timedelta(weeks=2650),
+                    "date_of_death": datetime.date.today() - datetime.timedelta(weeks=500),
                 }
             ]
         }
@@ -355,6 +417,22 @@ class User(UserBase):
                     "email": "foo@bar.com",
                     "is_active": True,
                     "borrowed_book_instances": [],
+                }
+            ]
+        }
+
+class UserInline(UserBase):
+    id: int
+    is_active: bool
+
+    class Config:
+        from_attributes = True
+        json_schema_extra = {
+            "examples": [
+                {
+                    "username": "foobar",
+                    "email": "foo@bar.com",
+                    "is_active": True,
                 }
             ]
         }

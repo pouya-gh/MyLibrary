@@ -22,7 +22,7 @@ def create_genre(
     except IntegrityError:
         raise HTTPException(status_code=400, detail="Failed to create genre")
     
-@router.get("/", response_model=list[schemas.Genre], tags=["genres"])
+@router.get("/", response_model=list[schemas.GenreInline], tags=["genres"])
 def get_genres(
         db: Annotated[Session, Depends(get_db)], 
         skip: int = 0, limit: int = 100

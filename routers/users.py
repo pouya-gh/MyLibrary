@@ -24,7 +24,7 @@ def create_user(
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid email format")
 
-@router.get("/", response_model=list[schemas.User], tags=["users"])
+@router.get("/", response_model=list[schemas.UserInline], tags=["users"])
 def get_users(
         db: Annotated[Session, Depends(get_db)], 
         skip: int = 0, limit: int = 100

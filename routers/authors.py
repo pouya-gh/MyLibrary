@@ -22,7 +22,7 @@ def create_author(
     except IntegrityError:
         raise HTTPException(status_code=400, detail="Failed to create author")
     
-@router.get("/", response_model=list[schemas.Author], tags=["authors"])
+@router.get("/", response_model=list[schemas.AuthorInline], tags=["authors"])
 def get_authors(
         db: Annotated[Session, Depends(get_db)], 
         skip: int = 0, limit: int = 100

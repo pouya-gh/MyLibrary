@@ -22,7 +22,7 @@ def create_book(
     except IntegrityError:
         raise HTTPException(status_code=400, detail="Failed to create book")
     
-@router.get("/", response_model=list[schemas.Book], tags=["books"])
+@router.get("/", response_model=list[schemas.BookInline], tags=["books"])
 def get_books(
         db: Annotated[Session, Depends(get_db)],
         skip: int = 0, limit: int = 100,

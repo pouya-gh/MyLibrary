@@ -22,7 +22,7 @@ def create_language(
     except IntegrityError:
         raise HTTPException(status_code=400, detail="Failed to create language")
     
-@router.get("/", response_model=list[schemas.Language], tags=["languages"])
+@router.get("/", response_model=list[schemas.LanguageInline], tags=["languages"])
 def get_languages(
         db: Annotated[Session, Depends(get_db)], 
         skip: int = 0, limit: int = 100
