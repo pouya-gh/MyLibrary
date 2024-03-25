@@ -25,7 +25,7 @@ def can_borrow_book_instance(book_instance: schemas.BookInstance, user_id: int) 
         ))
 
 
-@router.post("/", response_model=schemas.BookInstance)
+@router.post("/", response_model=schemas.BookInstance, tags=["admin"])
 def create_bookinstance(
         db: Annotated[Session, Depends(get_db)], 
         current_user: Annotated[schemas.User, Security(get_current_active_user, scopes=["super"])],
@@ -37,7 +37,7 @@ def create_bookinstance(
     except IntegrityError:
         raise HTTPException(status_code=400, detail="Failed to create book instance")
     
-@router.get("/", response_model=list[schemas.BookInstance])
+@router.get("/", response_model=list[schemas.BookInstance], tags=["bookinstances"])
 def get_bookinstances(
         db: Annotated[Session, Depends(get_db)], 
         skip: int = 0, limit: int = 100,
@@ -46,7 +46,7 @@ def get_bookinstances(
 
     return crud.get_book_instances(db, skip, limit, status)
 
-@router.get("/{instance_id}", response_model=schemas.BookInstance)
+@router.get("/{instance_id}", response_model=schemas.BookInstance, tags=["bookinstances"])
 def get_bookinstance(
         db: Annotated[Session, Depends(get_db)], 
         instance_id: str
@@ -57,7 +57,7 @@ def get_bookinstance(
         raise HTTPException(status_code=404, detail="Book instance deos not exist")
     return db_bookinstance
 
-@router.post("/{instance_id}", response_model=schemas.BookInstance)
+@router.post("/{instance_id}", response_model=schemas.BookInstance, tags=["admin"])
 def update_bookinstance(
         db: Annotated[Session, Depends(get_db)], 
         current_user: Annotated[schemas.User, Security(get_current_active_user, scopes=["super"])],
@@ -69,7 +69,7 @@ def update_bookinstance(
         raise HTTPException(status_code=404, detail="Book instance does not exist")
     return db_bookinstance
 
-@router.post("/{instance_id}/delete", response_model=schemas.BookInstance)
+@router.post("/{instance_id}/delete", response_model=schemas.BookInstance, tags=["admin"])
 def delete_bookinstance(
         db: Annotated[Session, Depends(get_db)], 
         current_user: Annotated[schemas.User, Security(get_current_active_user, scopes=["super"])], 
@@ -81,7 +81,7 @@ def delete_bookinstance(
         raise HTTPException(status_code=404, detail="Book does not exist")
     return db_bookinstance
 
-@router.post("/{instance_id}/borrow", response_model=schemas.BookInstance)
+@router.post("/{instance_id}/borrow", response_model=schemas.BookInstance, tags=["bookinstances"])
 def borrow_book(
         db: Annotated[Session, Depends(get_db)],
         current_user: Annotated[schemas.User, Depends(get_current_active_user)],
@@ -101,7 +101,7 @@ def borrow_book(
     else:
         raise HTTPException(status_code=400, detail="Book instance is not available")
 
-@router.post("/{instance_id}/return", response_model=schemas.BookInstance) 
+@router.post("/{instance_id}/return", response_model=schemas.BookInstance, tags=["bookinstances"]) 
 def return_book(
         db: Annotated[Session, Depends(get_db)],
         current_user: Annotated[schemas.User, Depends(get_current_active_user)],
@@ -121,7 +121,7 @@ def return_book(
     else:
         raise HTTPException(status_code=400, detail="This book instance is not borrowed to you")
     
-@router.post("/{instance_id}/reserve", response_model=schemas.BookInstance)
+@router.post("/{instance_id}/reserve", response_model=schemas.BookInstance, tags=["bookinstances"])
 def reserve_book(
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[schemas.User, Depends(get_current_active_user)],

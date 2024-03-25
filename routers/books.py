@@ -10,7 +10,7 @@ from dependencies import get_db, get_current_active_user
 
 router = APIRouter(prefix="/books")
 
-@router.post("/", response_model=schemas.Book)
+@router.post("/", response_model=schemas.Book, tags=["admin"])
 def create_book(
         db: Annotated[Session, Depends(get_db)], 
         current_user: Annotated[schemas.User, Security(get_current_active_user, scopes=["super"])],
@@ -22,7 +22,7 @@ def create_book(
     except IntegrityError:
         raise HTTPException(status_code=400, detail="Failed to create book")
     
-@router.get("/", response_model=list[schemas.Book])
+@router.get("/", response_model=list[schemas.Book], tags=["books"])
 def get_books(
         db: Annotated[Session, Depends(get_db)],
         skip: int = 0, limit: int = 100,
@@ -43,7 +43,7 @@ def get_books(
     else:
         return crud.get_books_by_language(db, language, skip, limit)
 
-@router.get("/{book_id}", response_model=schemas.Book)
+@router.get("/{book_id}", response_model=schemas.Book, tags=["books"])
 def get_book(
         db: Annotated[Session, Depends(get_db)], 
         book_id: int
@@ -54,7 +54,7 @@ def get_book(
         raise HTTPException(status_code=404, detail="Book deos not exist")
     return db_book
 
-@router.post("/{book_id}", response_model=schemas.Book)
+@router.post("/{book_id}", response_model=schemas.Book, tags=["admin"])
 def update_book(
         db: Annotated[Session, Depends(get_db)], 
         current_user: Annotated[schemas.User, Security(get_current_active_user, scopes=["super"])],
@@ -66,7 +66,7 @@ def update_book(
         raise HTTPException(status_code=404, detail="Book does not exist")
     return db_book
 
-@router.post("/{book_id}/delete", response_model=schemas.Book)
+@router.post("/{book_id}/delete", response_model=schemas.Book, tags=["admin"])
 def delete_book(
         db: Annotated[Session, Depends(get_db)], 
         current_user: Annotated[schemas.User, Security(get_current_active_user, scopes=["super"])],

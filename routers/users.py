@@ -11,7 +11,7 @@ from dependencies import get_db, get_current_active_user
 
 router = APIRouter(prefix="/users")
 
-@router.post('/', response_model=schemas.User)
+@router.post('/', response_model=schemas.User, tags=["users"])
 def create_user(
         db: Annotated[Session, Depends(get_db)], 
         user: schemas.UserCreate
@@ -24,7 +24,7 @@ def create_user(
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid email format")
 
-@router.get("/", response_model=list[schemas.User])
+@router.get("/", response_model=list[schemas.User], tags=["users"])
 def get_users(
         db: Annotated[Session, Depends(get_db)], 
         skip: int = 0, limit: int = 100
@@ -33,7 +33,7 @@ def get_users(
     users = crud.get_users(db, skip, limit)
     return users
 
-@router.get("/{user_id}", response_model=schemas.User)
+@router.get("/{user_id}", response_model=schemas.User, tags=["users"])
 def get_user(
         db: Annotated[Session, Depends(get_db)], 
         user_id: int
@@ -44,7 +44,7 @@ def get_user(
         raise HTTPException(status_code=404, detail="User does not exist")
     return db_user
 
-@router.post("/{user_id}", response_model=schemas.User)
+@router.post("/{user_id}", response_model=schemas.User, tags=["admin"])
 def update_user(
         db: Annotated[Session, Depends(get_db)],
         current_user: Annotated[schemas.User, Security(get_current_active_user, scopes=["super"])],
@@ -56,7 +56,7 @@ def update_user(
         raise HTTPException(status_code=404, detail="User does not exist")
     return db_user
 
-@router.post("/{user_id}/delete", response_model=schemas.User)
+@router.post("/{user_id}/delete", response_model=schemas.User, tags=["admin"])
 def delete_user(
         db: Annotated[Session, Depends(get_db)], 
         current_user: Annotated[schemas.User, Security(get_current_active_user, scopes=["super"])],

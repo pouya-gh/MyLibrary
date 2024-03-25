@@ -1,7 +1,7 @@
 from typing import Annotated
 
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
-from fastapi import Depends, HTTPException, Security, status
+from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from pydantic import ValidationError, BaseModel
 

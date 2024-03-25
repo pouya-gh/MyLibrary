@@ -21,6 +21,45 @@ from contextlib import asynccontextmanager
 
 models.Base.metadata.create_all(bind=engine)
 
+tags_metadata = [
+    {
+        "name": "default",
+        "description": "",
+    },
+    {
+        "name": "authorization",
+        "description": "Authorization operations.",
+    },
+    {
+        "name": "users",
+        "description": "Operations with users.",
+    },
+    {
+        "name": "authors",
+        "description": "Operations with authors.",
+    },
+    {
+        "name": "genres",
+        "description": "Operations with genres.",
+    },
+    {
+        "name": "languages",
+        "description": "Operations with languages.",
+    },
+    {
+        "name": "books",
+        "description": "Operations with books.",
+    },
+    {
+        "name": "bookinstances",
+        "description": "Operations with bookinstances.",
+    },
+    {
+        "name": "admin",
+        "description": "Operations with admin.",
+    },
+]
+
 def authenticate_user(db: Session, username: str, password: str):
     user = crud.get_user_by_username(db, username)
     if not user:
@@ -52,13 +91,13 @@ async def lifespan(app: FastAPI):
     yield
     #nothing
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(lifespan=lifespan, openapi_tags=tags_metadata)
 
 @app.get('/')
 async def index():
     return {"msg": "Welcome!"}
 
-@app.post("/token")
+@app.post("/token", tags=["authorization"])
 def login_for_access_token(
         form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
         db: Annotated[Session, Depends(get_db)]
@@ -81,7 +120,7 @@ def login_for_access_token(
         )
     return {"access_token": access_token, "token_type":"bearer"}
 
-@app.get("/users/me/", response_model=schemas.User)
+@app.get("/users/me/", response_model=schemas.User, tags=["users"])
 def get_current_logged_in_user(
         current_user: Annotated[schemas.User, Depends(get_current_active_user)]
     ):

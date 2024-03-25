@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import delete, update
+from sqlalchemy import update
 
 from sql import models, schemas
 from sql.models import BookInstanceStatus

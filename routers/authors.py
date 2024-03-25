@@ -10,7 +10,7 @@ from dependencies import get_db, get_current_active_user
 
 router = APIRouter(prefix="/authors")
 
-@router.post("/", response_model=schemas.Author)
+@router.post("/", response_model=schemas.Author, tags=["admin"])
 def create_author(
         db: Annotated[Session, Depends(get_db)], 
         current_user: Annotated[schemas.User, Security(get_current_active_user, scopes=["super"])],
@@ -22,7 +22,7 @@ def create_author(
     except IntegrityError:
         raise HTTPException(status_code=400, detail="Failed to create author")
     
-@router.get("/", response_model=list[schemas.Author])
+@router.get("/", response_model=list[schemas.Author], tags=["authors"])
 def get_authors(
         db: Annotated[Session, Depends(get_db)], 
         skip: int = 0, limit: int = 100
@@ -30,7 +30,7 @@ def get_authors(
 
     return crud.get_authors(db, skip, limit)
 
-@router.get("/{author_id}", response_model=schemas.Author)
+@router.get("/{author_id}", response_model=schemas.Author, tags=["authors"])
 def get_author(
         db: Annotated[Session, Depends(get_db)], 
         author_id: int
@@ -41,7 +41,7 @@ def get_author(
         raise HTTPException(status_code=404, detail="Author deos not exist")
     return db_author
 
-@router.post("/{author_id}", response_model=schemas.Author)
+@router.post("/{author_id}", response_model=schemas.Author, tags=["admin"])
 def update_author(
         db: Annotated[Session, Depends(get_db)], 
         current_user: Annotated[schemas.User, Security(get_current_active_user, scopes=["super"])],
@@ -53,7 +53,7 @@ def update_author(
         raise HTTPException(status_code=404, detail="Author does not exist")
     return db_author
 
-@router.post("/{author_id}/delete", response_model=schemas.Author)
+@router.post("/{author_id}/delete", response_model=schemas.Author, tags=["admin"])
 def delete_author(
         db: Annotated[Session, Depends(get_db)], 
         current_user: Annotated[schemas.User, Security(get_current_active_user, scopes=["super"])],

@@ -10,7 +10,7 @@ from dependencies import get_db, get_current_active_user
 
 router = APIRouter(prefix="/languages")
 
-@router.post("/", response_model=schemas.Language)
+@router.post("/", response_model=schemas.Language, tags=["admin"])
 def create_language(
         db: Annotated[Session, Depends(get_db)], 
         current_user: Annotated[schemas.User, Security(get_current_active_user, scopes=["super"])],
@@ -22,7 +22,7 @@ def create_language(
     except IntegrityError:
         raise HTTPException(status_code=400, detail="Failed to create language")
     
-@router.get("/", response_model=list[schemas.Language])
+@router.get("/", response_model=list[schemas.Language], tags=["languages"])
 def get_languages(
         db: Annotated[Session, Depends(get_db)], 
         skip: int = 0, limit: int = 100
@@ -30,7 +30,7 @@ def get_languages(
 
     return crud.get_languages(db, skip, limit)
 
-@router.post("/{language_id}", response_model=schemas.Language)
+@router.post("/{language_id}", response_model=schemas.Language, tags=["admin"])
 def update_language(
         db: Annotated[Session, Depends(get_db)], 
         current_user: Annotated[schemas.User, Security(get_current_active_user, scopes=["super"])],
@@ -42,7 +42,7 @@ def update_language(
         raise HTTPException(status_code=404, detail="Language does not exist")
     return db_language
 
-@router.post("/{language_id}/delete", response_model=schemas.Language)
+@router.post("/{language_id}/delete", response_model=schemas.Language, tags=["admin"])
 def delete_language(
         db: Annotated[Session, Depends(get_db)], 
         current_user: Annotated[schemas.User, Security(get_current_active_user, scopes=["super"])],
