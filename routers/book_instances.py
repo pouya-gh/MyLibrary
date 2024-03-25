@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Security
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
@@ -28,7 +28,7 @@ def can_borrow_book_instance(book_instance: schemas.BookInstance, user_id: int) 
 @router.post("/", response_model=schemas.BookInstance)
 def create_bookinstance(
         db: Annotated[Session, Depends(get_db)], 
-        current_user: Annotated[schemas.User, Depends(get_current_active_user)],
+        current_user: Annotated[schemas.User, Security(get_current_active_user, scopes=["super"])],
         instance: schemas.BookInstanceCreate
     ):
 
@@ -60,7 +60,7 @@ def get_bookinstance(
 @router.post("/{instance_id}", response_model=schemas.BookInstance)
 def update_bookinstance(
         db: Annotated[Session, Depends(get_db)], 
-        current_user: Annotated[schemas.User, Depends(get_current_active_user)],
+        current_user: Annotated[schemas.User, Security(get_current_active_user, scopes=["super"])],
         instance: schemas.BookInstanceUpdate, instance_id: str
     ):
     
@@ -72,7 +72,7 @@ def update_bookinstance(
 @router.post("/{instance_id}/delete", response_model=schemas.BookInstance)
 def delete_bookinstance(
         db: Annotated[Session, Depends(get_db)], 
-        current_user: Annotated[schemas.User, Depends(get_current_active_user)], 
+        current_user: Annotated[schemas.User, Security(get_current_active_user, scopes=["super"])], 
         instance_id: str
     ):
 

@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Security
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
@@ -13,7 +13,7 @@ router = APIRouter(prefix="/books")
 @router.post("/", response_model=schemas.Book)
 def create_book(
         db: Annotated[Session, Depends(get_db)], 
-        current_user: Annotated[schemas.User, Depends(get_current_active_user)],
+        current_user: Annotated[schemas.User, Security(get_current_active_user, scopes=["super"])],
         book: schemas.BookCreate
     ):
 
@@ -57,7 +57,7 @@ def get_book(
 @router.post("/{book_id}", response_model=schemas.Book)
 def update_book(
         db: Annotated[Session, Depends(get_db)], 
-        current_user: Annotated[schemas.User, Depends(get_current_active_user)],
+        current_user: Annotated[schemas.User, Security(get_current_active_user, scopes=["super"])],
         book: schemas.BookUpdate, book_id: int
     ):
 
@@ -69,7 +69,7 @@ def update_book(
 @router.post("/{book_id}/delete", response_model=schemas.Book)
 def delete_book(
         db: Annotated[Session, Depends(get_db)], 
-        current_user: Annotated[schemas.User, Depends(get_current_active_user)],
+        current_user: Annotated[schemas.User, Security(get_current_active_user, scopes=["super"])],
         book_id: int
     ):
 

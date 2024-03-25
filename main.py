@@ -1,7 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
 
 from typing import Annotated
 from datetime import timedelta
@@ -73,8 +72,11 @@ def login_for_access_token(
             headers={'WWW-Authenticate': "Bearer"},
         )
     access_token_expires = timedelta(minutes=dependencies.ACCESS_TOKEN_EXPIRE_MINUTES)
+    scopes = []
+    if user.is_superuser:
+        scopes = ["super"]
     access_token = dependencies.create_access_token(
-        data={"sub": user.username},
+        data={"sub": user.username, "scopes": scopes},
         expires_delta=access_token_expires
         )
     return {"access_token": access_token, "token_type":"bearer"}

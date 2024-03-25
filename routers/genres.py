@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Security
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
@@ -13,7 +13,7 @@ router = APIRouter(prefix="/genres")
 @router.post("/", response_model=schemas.Genre)
 def create_genre(
         db: Annotated[Session, Depends(get_db)], 
-        current_user: Annotated[schemas.User, Depends(get_current_active_user)],
+        current_user: Annotated[schemas.User, Security(get_current_active_user, scopes=["super"])],
         genre: schemas.GenreCreate
     ):
 
@@ -33,7 +33,7 @@ def get_genres(
 @router.post("/{genre_id}", response_model=schemas.Genre)
 def update_genre(
         db: Annotated[Session, Depends(get_db)], 
-        current_user: Annotated[schemas.User, Depends(get_current_active_user)],
+        current_user: Annotated[schemas.User, Security(get_current_active_user, scopes=["super"])],
         genre: schemas.GenreUpdate, genre_id: int
     ):
 
@@ -45,7 +45,7 @@ def update_genre(
 @router.post("/{genre_id}/delete", response_model=schemas.Genre)
 def delete_genre(
         db: Annotated[Session, Depends(get_db)], 
-        current_user: Annotated[schemas.User, Depends(get_current_active_user)],
+        current_user: Annotated[schemas.User, Security(get_current_active_user, scopes=["super"])],
         genre_id: int
     ):
 

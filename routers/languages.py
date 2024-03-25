@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Security
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
@@ -13,7 +13,7 @@ router = APIRouter(prefix="/languages")
 @router.post("/", response_model=schemas.Language)
 def create_language(
         db: Annotated[Session, Depends(get_db)], 
-        current_user: Annotated[schemas.User, Depends(get_current_active_user)],
+        current_user: Annotated[schemas.User, Security(get_current_active_user, scopes=["super"])],
         language: schemas.LanguageCreate
     ):
 
@@ -33,7 +33,7 @@ def get_languages(
 @router.post("/{language_id}", response_model=schemas.Language)
 def update_language(
         db: Annotated[Session, Depends(get_db)], 
-        current_user: Annotated[schemas.User, Depends(get_current_active_user)],
+        current_user: Annotated[schemas.User, Security(get_current_active_user, scopes=["super"])],
         language: schemas.LanguageUpdate, language_id: int
     ):
 
@@ -45,7 +45,7 @@ def update_language(
 @router.post("/{language_id}/delete", response_model=schemas.Language)
 def delete_language(
         db: Annotated[Session, Depends(get_db)], 
-        current_user: Annotated[schemas.User, Depends(get_current_active_user)],
+        current_user: Annotated[schemas.User, Security(get_current_active_user, scopes=["super"])],
         language_id: int
     ):
 
