@@ -320,6 +320,26 @@ class UserUpdate(BaseModel):
         }
     }
 
+class UserSelfUpdate(BaseModel):
+    """
+    Same fields as UserUpdate model minus the is_superuser field. 
+    But all these fields can be empty, which means you don't 
+    want them to be updated.
+    """
+    username: str | None = None
+    email: str | None = None
+    is_active: bool | None = None
+
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "email": "foo@gmail.com",
+                }
+            ]
+        }
+    }
+
 class User(UserBase):
     id: int
     is_active: bool
