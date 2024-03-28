@@ -60,6 +60,27 @@ tags_metadata = [
     },
 ]
 
+description = """
+This API lets you choose a book and borrow an instance of it. 
+
+## Books
+
+You can sen a list of books and the instances (copies) that are available.
+You can filter books by **genre** and/or **language**. 
+
+## Users
+
+You can sign up (by **creating** a user) and sign in.
+The user authorization is provided by FastAPI's OAuth2 **password flow**.
+New users can't add new items (books, genres and ...). Only a **super** user can
+do these things. There is always 1 super user. Normal users can be turned super
+only by and exiting super user.
+
+## Book Instances
+
+These are the items you can actually borrow or reserve, not books themselves.
+"""
+
 def authenticate_user(db: Session, username: str, password: str):
     user = crud.get_user_by_username(db, username)
     if not user:
@@ -91,7 +112,17 @@ async def lifespan(app: FastAPI):
     yield
     #nothing
 
-app = FastAPI(lifespan=lifespan, openapi_tags=tags_metadata)
+app = FastAPI(
+    lifespan=lifespan, 
+    openapi_tags=tags_metadata,
+    title="Simple Local Library",
+    description=description,
+    summary="A minimal app to show basic fastapi capabilities.",
+    contact={
+        "name": "Pouya Gharibpour",
+        "url": "https://github.com/pouya-gh",
+        "email": "p.gharibpour@gmail.com",
+    },)
 
 @app.get('/')
 async def index():
