@@ -44,7 +44,7 @@ def get_user(
         raise HTTPException(status_code=404, detail="User does not exist")
     return db_user
 
-@router.post("/me", response_model=schemas.User, tags=["users"])
+@router.patch("/me", response_model=schemas.User, tags=["users"])
 def update_profile(
         db: Annotated[Session, Depends(get_db)], 
         current_user: Annotated[schemas.User, Security(get_current_active_user)],
@@ -56,7 +56,7 @@ def update_profile(
         raise HTTPException(status_code=404, detail="User does not exist")
     return db_user
 
-@router.post("/{user_id}", response_model=schemas.User, tags=["admin"])
+@router.patch("/{user_id}", response_model=schemas.User, tags=["admin"])
 def update_user(
         db: Annotated[Session, Depends(get_db)],
         current_user: Annotated[schemas.User, Security(get_current_active_user, scopes=["super"])],
@@ -68,7 +68,7 @@ def update_user(
         raise HTTPException(status_code=404, detail="User does not exist")
     return db_user
 
-@router.post("/{user_id}/delete", response_model=schemas.User, tags=["admin"])
+@router.delete("/{user_id}/delete", response_model=schemas.User, tags=["admin"])
 def delete_user(
         db: Annotated[Session, Depends(get_db)], 
         current_user: Annotated[schemas.User, Security(get_current_active_user, scopes=["super"])],

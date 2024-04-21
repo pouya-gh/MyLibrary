@@ -57,7 +57,7 @@ def get_bookinstance(
         raise HTTPException(status_code=404, detail="Book instance deos not exist")
     return db_bookinstance
 
-@router.post("/{instance_id}", response_model=schemas.BookInstance, tags=["admin"])
+@router.patch("/{instance_id}", response_model=schemas.BookInstance, tags=["admin"])
 def update_bookinstance(
         db: Annotated[Session, Depends(get_db)], 
         current_user: Annotated[schemas.User, Security(get_current_active_user, scopes=["super"])],
@@ -69,7 +69,7 @@ def update_bookinstance(
         raise HTTPException(status_code=404, detail="Book instance does not exist")
     return db_bookinstance
 
-@router.post("/{instance_id}/delete", response_model=schemas.BookInstance, tags=["admin"])
+@router.delete("/{instance_id}/delete", response_model=schemas.BookInstance, tags=["admin"])
 def delete_bookinstance(
         db: Annotated[Session, Depends(get_db)], 
         current_user: Annotated[schemas.User, Security(get_current_active_user, scopes=["super"])], 

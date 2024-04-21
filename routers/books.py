@@ -54,7 +54,7 @@ def get_book(
         raise HTTPException(status_code=404, detail="Book deos not exist")
     return db_book
 
-@router.post("/{book_id}", response_model=schemas.Book, tags=["admin"])
+@router.patch("/{book_id}", response_model=schemas.Book, tags=["admin"])
 def update_book(
         db: Annotated[Session, Depends(get_db)], 
         current_user: Annotated[schemas.User, Security(get_current_active_user, scopes=["super"])],
@@ -66,7 +66,7 @@ def update_book(
         raise HTTPException(status_code=404, detail="Book does not exist")
     return db_book
 
-@router.post("/{book_id}/delete", response_model=schemas.Book, tags=["admin"])
+@router.delete("/{book_id}/delete", response_model=schemas.Book, tags=["admin"])
 def delete_book(
         db: Annotated[Session, Depends(get_db)], 
         current_user: Annotated[schemas.User, Security(get_current_active_user, scopes=["super"])],

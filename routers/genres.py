@@ -30,7 +30,7 @@ def get_genres(
 
     return crud.get_genres(db, skip, limit)
 
-@router.post("/{genre_id}", response_model=schemas.Genre, tags=["admin"])
+@router.patch("/{genre_id}", response_model=schemas.Genre, tags=["admin"])
 def update_genre(
         db: Annotated[Session, Depends(get_db)], 
         current_user: Annotated[schemas.User, Security(get_current_active_user, scopes=["super"])],
@@ -42,7 +42,7 @@ def update_genre(
         raise HTTPException(status_code=404, detail="Genre does not exist")
     return db_genre
 
-@router.post("/{genre_id}/delete", response_model=schemas.Genre, tags=["admin"])
+@router.delete("/{genre_id}/delete", response_model=schemas.Genre, tags=["admin"])
 def delete_genre(
         db: Annotated[Session, Depends(get_db)], 
         current_user: Annotated[schemas.User, Security(get_current_active_user, scopes=["super"])],

@@ -30,7 +30,7 @@ def get_languages(
 
     return crud.get_languages(db, skip, limit)
 
-@router.post("/{language_id}", response_model=schemas.Language, tags=["admin"])
+@router.patch("/{language_id}", response_model=schemas.Language, tags=["admin"])
 def update_language(
         db: Annotated[Session, Depends(get_db)], 
         current_user: Annotated[schemas.User, Security(get_current_active_user, scopes=["super"])],
@@ -42,7 +42,7 @@ def update_language(
         raise HTTPException(status_code=404, detail="Language does not exist")
     return db_language
 
-@router.post("/{language_id}/delete", response_model=schemas.Language, tags=["admin"])
+@router.delete("/{language_id}/delete", response_model=schemas.Language, tags=["admin"])
 def delete_language(
         db: Annotated[Session, Depends(get_db)], 
         current_user: Annotated[schemas.User, Security(get_current_active_user, scopes=["super"])],
